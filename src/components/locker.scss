@@ -1,0 +1,109 @@
+$full-width: 100%;
+$bg-available: #7aff51;
+$bg-unavailable: #ed4325;
+$bg-selected: rgba(0,0,0,.125);
+
+
+.align-right {
+    text-align: right;
+}
+
+.align-center {
+    text-align: center;
+}
+
+.pay-machine {
+    height: auto;
+}
+
+.tv-touchscreen {
+    width: $full-width;
+    border: 1px solid rgba(0,0,0,.125);
+    padding: 5px;
+}
+
+.content-line-header, .content-line-common {
+    width: $full-width;
+    margin-bottom: 16px;
+    border-radius: 8px;
+}
+
+.content-line-header {
+    height: 10px;
+}
+
+.content-line-common {
+    height: 15px
+}
+
+.content-line-header.header {
+    margin: 10px auto 20px auto;
+}
+
+.endheader {
+    width: 80%;
+}
+
+.endcommon {
+    width: 95%;
+}
+
+.shimmerBG {
+    animation-duration: 2.2s;
+    animation-fill-mode: forwards;
+    animation-iteration-count: infinite;
+    animation-name: shimmer;
+    animation-timing-function: linear;
+    background: #d9d9d9;
+    background: linear-gradient(to right, #ecebeb 4%, #d9d9d9 25%, #ecebeb 36%);
+    background-size: 1200px 100%;
+}
+
+@-webkit-keyframes shimmer {
+    0% {
+        background-position: -100% 0;
+    }
+    100% {
+        background-position: 100% 0;
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -1200px 0;
+    }
+    100% {
+        background-position: 1200px 0;
+    }
+}
+
+.unit {
+    width: 80%;
+    border-radius: 10px;
+    text-align: center;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    margin: 0 auto 10px auto;
+
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.cursor-unavailable {
+    &:hover {
+        cursor: not-allowed;
+    }
+}
+
+.available {
+    background-color: $bg-available;
+}
+
+.unavailable {
+    background-color: $bg-unavailable;
+}
+
+.selected {
+    background-color: $bg-selected;
+}
