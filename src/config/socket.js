@@ -1,5 +1,5 @@
 import socketIOClient from "socket.io-client";
 
-const endpoint = "http://localhost:8000";
+const endpoint = "https://fullstackfulltime.herokuapp.com";
 
 export const socket = socketIOClient(endpoint);
