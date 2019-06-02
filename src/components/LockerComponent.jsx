@@ -51,10 +51,10 @@ class LockerComponent extends Component {
       <div style={{ paddingTop: 30 }}>
         <Container>
           <Row>
-            <Col xs={3}>
+            <Col xs={12} lg={3}>
               <MachineComponent loading={loading} />
             </Col>
-            <Col xs={9}>
+            <Col xs={12} lg={9}>
               <UnitsComponent loading={loading} />
             </Col>
           </Row>

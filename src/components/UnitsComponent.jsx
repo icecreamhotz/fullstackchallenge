@@ -39,17 +39,10 @@ class UnitsComponent extends Component {
     const { now } = this.state
     const { lockers } = this.props;
     return (
-      <Row>
-        <Col xs={4}>
+      <Row noGutters={true}>
+        <Col xs={12} lg={4}>
           <h1>Size S</h1>
-        </Col>
-        <Col xs={4}>
-          <h1>Size M</h1>
-        </Col>
-        <Col xs={4}>
-          <h1>Size L</h1>
-        </Col>
-        {lockers.map((locker, index) => {
+          {lockers.filter(item => item.size.size === "S").map((locker, index) => {
           const sizeData = locker.size;
           const classNameRended = locker.status === "0" ? "" : "rended";
           const getDate = now.format("MMMM DD YYYY HH:mm:ss");
@@ -69,7 +62,7 @@ class UnitsComponent extends Component {
               : "\u00A0";
           return (
             <Col
-              xs={4}
+              xs={12}
               style={{
                 marginBottom: 15
               }}
@@ -109,6 +102,134 @@ class UnitsComponent extends Component {
             </Col>
           );
         })}
+        </Col>
+        <Col xs={12} lg={4}>
+          <h1>Size M</h1>
+          {lockers.filter(item => item.size.size === "M").map((locker, index) => {
+          const sizeData = locker.size;
+          const classNameRended = locker.status === "0" ? "" : "rended";
+          const getDate = now.format("MMMM DD YYYY HH:mm:ss");
+          const startRended =
+            locker.status === "1" ? `Start: ${getDate}` : getDate;
+          const endRended =
+            locker.status === "1" ? (
+              <CountTimeRended timeout={locker.timeout} />
+            ) : (
+              "\u00A0"
+            );
+          const timeout =
+            locker.status === "1"
+              ? `End: ${moment(locker.timeout, "x").format(
+                  "MMMM DD YYYY HH:mm:ss"
+                )}`
+              : "\u00A0";
+          return (
+            <Col
+              xs={12}
+              style={{
+                marginBottom: 15
+              }}
+              key={index}
+            >
+              <Card
+                className={`${
+                  locker.selected === "0" ? "" : "selected"
+                } ${classNameRended}`}
+              >
+                <Card.Body>
+                  <Row className="text-muted" key={index}>
+                    <Col>
+                      <Badge pill variant="primary">
+                        {`${sizeData.perhour}B / 60 minutes`}
+                      </Badge>
+                      <Badge pill variant="info">
+                        {`${sizeData.nextminute}B / add one minute`}
+                      </Badge>
+                    </Col>
+                    <Col className="align-right">
+                      <Badge
+                        pill
+                        variant="dark"
+                        className={`${classNameRended}`}
+                      >
+                        {locker.locker}
+                      </Badge>
+                    </Col>
+                  </Row>
+                  <Card.Text>{locker.user === null || locker.status === "0" ? "I Gear Locker" : `Contact : ${locker.user.telephone}`}</Card.Text>
+                  <Card.Text className="align-right">{startRended}</Card.Text>
+                  <Card.Text className="align-right">{timeout}</Card.Text>
+                  <Card.Text className="align-right">{endRended}</Card.Text>
+                </Card.Body>
+              </Card>
+            </Col>
+          );
+        })}
+        </Col>
+        <Col xs={12} lg={4}>
+          <h1>Size L</h1>
+          {lockers.filter(item => item.size.size === "L").map((locker, index) => {
+          const sizeData = locker.size;
+          const classNameRended = locker.status === "0" ? "" : "rended";
+          const getDate = now.format("MMMM DD YYYY HH:mm:ss");
+          const startRended =
+            locker.status === "1" ? `Start: ${getDate}` : getDate;
+          const endRended =
+            locker.status === "1" ? (
+              <CountTimeRended timeout={locker.timeout} />
+            ) : (
+              "\u00A0"
+            );
+          const timeout =
+            locker.status === "1"
+              ? `End: ${moment(locker.timeout, "x").format(
+                  "MMMM DD YYYY HH:mm:ss"
+                )}`
+              : "\u00A0";
+          return (
+            <Col
+              xs={12}
+              style={{
+                marginBottom: 15
+              }}
+              key={index}
+            >
+              <Card
+                className={`${
+                  locker.selected === "0" ? "" : "selected"
+                } ${classNameRended}`}
+              >
+                <Card.Body>
+                  <Row className="text-muted" key={index}>
+                    <Col>
+                      <Badge pill variant="primary">
+                        {`${sizeData.perhour}B / 60 minutes`}
+                      </Badge>
+                      <Badge pill variant="info">
+                        {`${sizeData.nextminute}B / add one minute`}
+                      </Badge>
+                    </Col>
+                    <Col className="align-right">
+                      <Badge
+                        pill
+                        variant="dark"
+                        className={`${classNameRended}`}
+                      >
+                        {locker.locker}
+                      </Badge>
+                    </Col>
+                  </Row>
+                  <Card.Text>{locker.user === null || locker.status === "0" ? "I Gear Locker" : `Contact : ${locker.user.telephone}`}</Card.Text>
+                  <Card.Text className="align-right">{startRended}</Card.Text>
+                  <Card.Text className="align-right">{timeout}</Card.Text>
+                  <Card.Text className="align-right">{endRended}</Card.Text>
+                </Card.Body>
+              </Card>
+            </Col>
+          );
+        })}
+        </Col>
+        
       </Row>
     );
   }
