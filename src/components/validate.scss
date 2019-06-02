@@ -1,0 +1,10 @@
+$validated-pass: #48ff42;
+$validared-fail: #ff422d;
+
+.validate-pass {
+    color: $validated-pass !important;
+}
+
+.validate-failed {
+    color: $validared-fail !important;
+}

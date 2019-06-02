@@ -4,14 +4,60 @@ import { Row, Col } from "react-bootstrap";
 import { connect } from "react-redux";
 import { setMoney } from "../actions/cost.js";
 import "./money.scss";
+import "./locker.scss";
 
-const CoinComponent = ({ setMoney }) => {
+const LoadingContent = () => (
+  <div className="coin-container" style={{ paddingTop: 20 }}>
+    <div className="shimmerBG content-line-common price endcoin-header" />
+    <Row noGutters={true}>
+      <Col>
+        <div className="shimmerBG content-line-common price endcommon" />
+      </Col>
+      <Col>
+        <div className="shimmerBG content-line-common price endcommon" />
+      </Col>
+      <Col>
+        <div className="shimmerBG content-line-common price endcommon" />
+      </Col>
+      <Col>
+        <div className="shimmerBG content-line-common price endcommon" />
+      </Col>
+    </Row>
+    <div
+      className="shimmerBG content-line-common price endcoin-header"
+      style={{ marginTop: 20 }}
+    />
+    <Row noGutters={true}>
+      <Col xs={4}>
+        <div className="shimmerBG content-line-common price endcommon" />
+      </Col>
+      <Col xs={4}>
+        <div className="shimmerBG content-line-common price endcommon" />
+      </Col>
+      <Col xs={4}>
+        <div className="shimmerBG content-line-common price endcommon" />
+      </Col>
+    </Row>
+    <Row noGutters={true}>
+      <Col xs={6}>
+        <div className="shimmerBG content-line-common price endcommon" />
+      </Col>
+      <Col xs={6}>
+        <div className="shimmerBG content-line-common price endcommon" />
+      </Col>
+    </Row>
+  </div>
+);
+
+const CoinComponent = ({ setMoney, loading }) => {
   const handleClickAddMoney = useCallback(
     money => {
       setMoney(money);
     },
     [setMoney]
   );
+
+  if (loading) return <LoadingContent />;
 
   return (
     <div className="coin-container">
@@ -75,7 +121,8 @@ const CoinComponent = ({ setMoney }) => {
 };
 
 CoinComponent.propTypes = {
-  setMoney: PropTypes.func.isRequired
+  setMoney: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired
 };
 
 export default connect(

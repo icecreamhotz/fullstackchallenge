@@ -10,7 +10,7 @@ function App() {
   return (
     <Router>
       <Header />
-      <Route path="/locker" component={Locker} />
+      <Route path="/" component={Locker} />
     </Router>
   );
 }

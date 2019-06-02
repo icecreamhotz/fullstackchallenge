@@ -1,4 +1,4 @@
-import { UPDATE_COST, UPDATE_MONEY } from "../types";
+import { UPDATE_COST, UPDATE_MONEY, DELETE_MONEY } from "../types";
 
 export const setCost = cost => dispatch => {
   dispatch({
@@ -10,6 +10,13 @@ export const setCost = cost => dispatch => {
 export const setMoney = money => dispatch => {
   dispatch({
     type: UPDATE_MONEY,
+    money
+  });
+};
+
+export const deleteMoney = money => dispatch => {
+  dispatch({
+    type: DELETE_MONEY,
     money
   });
 };

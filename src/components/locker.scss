@@ -28,16 +28,17 @@ $bg-selected: rgba(0,0,0,.125);
     border-radius: 8px;
 }
 
-.content-line-header {
+.content-line-header.header {
+    margin: 10px auto 20px auto;
+    height: 12px;
+}
+
+.content-line-common.common {
     height: 10px;
 }
 
-.content-line-common {
-    height: 15px
-}
-
-.content-line-header.header {
-    margin: 10px auto 20px auto;
+.content-line-common.price {
+    height: 8px;
 }
 
 .endheader {
@@ -46,6 +47,10 @@ $bg-selected: rgba(0,0,0,.125);
 
 .endcommon {
     width: 95%;
+}
+
+.endcoin-header {
+    width: 40%;
 }
 
 .shimmerBG {
@@ -106,4 +111,8 @@ $bg-selected: rgba(0,0,0,.125);
 
 .selected {
     background-color: $bg-selected;
+}
+
+.rended {
+    background-color: #ed4325c7;
 }

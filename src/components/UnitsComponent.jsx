@@ -5,13 +5,13 @@ import { Row, Col, Card, Badge } from "react-bootstrap";
 import { connect } from "react-redux";
 
 import withScreenLoading from "./withScreenLoading";
+import CountTimeRended from "./CountTimeRended";
 
 class UnitsComponent extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      lockers: props.lockers || [],
       now: moment()
     };
   }
@@ -20,12 +20,11 @@ class UnitsComponent extends Component {
     this.timerID = setInterval(() => this.setCurrentTime(), 1000);
   }
 
-  componentWillReceiveProps(nextProps) {
+  shouldComponentUpdate(nextProps, nextState) {
     if (this.props.lockers !== nextProps.lockers) {
-      this.setState({
-        lockers: nextProps.lockers
-      });
+      return true;
     }
+    return false;
   }
 
   setCurrentTime = () => {
@@ -37,9 +36,8 @@ class UnitsComponent extends Component {
   }
 
   render() {
-    const { now, lockers } = this.state;
-    const getDate = now.format("ddd MMM DD YYYY");
-    const getTime = now.format("HH:mm:ss");
+    const { now } = this.state
+    const { lockers } = this.props;
     return (
       <Row>
         <Col xs={4}>
@@ -53,6 +51,22 @@ class UnitsComponent extends Component {
         </Col>
         {lockers.map((locker, index) => {
           const sizeData = locker.size;
+          const classNameRended = locker.status === "0" ? "" : "rended";
+          const getDate = now.format("MMMM DD YYYY HH:mm:ss");
+          const startRended =
+            locker.status === "1" ? `Start: ${getDate}` : getDate;
+          const endRended =
+            locker.status === "1" ? (
+              <CountTimeRended timeout={locker.timeout} />
+            ) : (
+              "\u00A0"
+            );
+          const timeout =
+            locker.status === "1"
+              ? `End: ${moment(locker.timeout, "x").format(
+                  "MMMM DD YYYY HH:mm:ss"
+                )}`
+              : "\u00A0";
           return (
             <Col
               xs={4}
@@ -61,7 +75,11 @@ class UnitsComponent extends Component {
               }}
               key={index}
             >
-              <Card className={locker.selected === "0" ? "" : "selected"}>
+              <Card
+                className={`${
+                  locker.selected === "0" ? "" : "selected"
+                } ${classNameRended}`}
+              >
                 <Card.Body>
                   <Row className="text-muted" key={index}>
                     <Col>
@@ -69,18 +87,23 @@ class UnitsComponent extends Component {
                         {`${sizeData.perhour}B / 60 minutes`}
                       </Badge>
                       <Badge pill variant="info">
-                        {`${sizeData.nextminute}B / 1 minute after 60 minutes`}
+                        {`${sizeData.nextminute}B / add one minute`}
                       </Badge>
                     </Col>
                     <Col className="align-right">
-                      <Badge pill variant="dark">
+                      <Badge
+                        pill
+                        variant="dark"
+                        className={`${classNameRended}`}
+                      >
                         {locker.locker}
                       </Badge>
                     </Col>
                   </Row>
-                  <Card.Text>I Gear Locker</Card.Text>
-                  <Card.Text className="align-right">{getDate}</Card.Text>
-                  <Card.Text className="align-right">{getTime}</Card.Text>
+                  <Card.Text>{locker.user === null || locker.status === "0" ? "I Gear Locker" : `Contact : ${locker.user.telephone}`}</Card.Text>
+                  <Card.Text className="align-right">{startRended}</Card.Text>
+                  <Card.Text className="align-right">{timeout}</Card.Text>
+                  <Card.Text className="align-right">{endRended}</Card.Text>
                 </Card.Body>
               </Card>
             </Col>
@@ -102,7 +125,7 @@ UnitsComponent.propTypes = {
         nextminute: PropTypes.number.isRequired
       }).isRequired,
       income: PropTypes.number.isRequired,
-      timeout: PropTypes.instanceOf(Date),
+      timeout: PropTypes.string,
       status: PropTypes.string.isRequired,
       user: PropTypes.shape({
         _id: PropTypes.string,

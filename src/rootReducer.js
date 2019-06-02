@@ -2,10 +2,10 @@ import { combineReducers } from "redux";
 
 import locker from "./reducers/locker";
 import cost from "./reducers/cost";
-import confirm from "./reducers/confirm";
+import modal from "./reducers/modal";
 
 export default combineReducers({
   locker,
   cost,
-  confirm
+  modal
 });

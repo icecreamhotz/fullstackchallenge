@@ -3,12 +3,27 @@ import PropTypes from "prop-types";
 import "./locker.scss";
 import { Row, Col, Card, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { connect } from "react-redux";
-import { setLockers } from "../actions/locker.js";
 import { setCost } from "../actions/cost.js";
+import { setLockers } from "../actions/locker.js";
 
 import PriceScreenComponent from "./PriceScreenComponent";
 import CoinComponent from "./CoinComponent";
 import ConfirmModalComponent from "./ConfirmModalComponent";
+import SuccessModalComponent from "./SuccessModalComponent";
+import UnAvailableModalComponent from "./UnAvailableModalComponent";
+
+const LoadingStatus = () => (
+  <Row>
+    <Col xs={12}>
+      {" "}
+      <div className="shimmerBG content-line-common price endcommon" />
+    </Col>
+    <Col xs={12}>
+      {" "}
+      <div className="shimmerBG content-line-common price endcommon" />
+    </Col>
+  </Row>
+);
 
 const LoadingUnitsHeader = () => (
   <Row noGutters={true}>
@@ -28,46 +43,46 @@ const LoadingUnits = () => (
   <div>
     <Row noGutters={true}>
       <Col>
-        <div className="shimmerBG content-line-common endcommon" />
+        <div className="shimmerBG content-line-common common endcommon" />
       </Col>
       <Col>
-        <div className="shimmerBG content-line-common endcommon" />
+        <div className="shimmerBG content-line-common common endcommon" />
       </Col>
       <Col>
-        <div className="shimmerBG content-line-common endcommon" />
-      </Col>
-    </Row>
-    <Row noGutters={true}>
-      <Col>
-        <div className="shimmerBG content-line-common endcommon" />
-      </Col>
-      <Col>
-        <div className="shimmerBG content-line-common endcommon" />
-      </Col>
-      <Col>
-        <div className="shimmerBG content-line-common endcommon" />
+        <div className="shimmerBG content-line-common common endcommon" />
       </Col>
     </Row>
     <Row noGutters={true}>
       <Col>
-        <div className="shimmerBG content-line-common endcommon" />
+        <div className="shimmerBG content-line-common common endcommon" />
       </Col>
       <Col>
-        <div className="shimmerBG content-line-common endcommon" />
+        <div className="shimmerBG content-line-common common endcommon" />
       </Col>
       <Col>
-        <div className="shimmerBG content-line-common endcommon" />
+        <div className="shimmerBG content-line-common common endcommon" />
       </Col>
     </Row>
     <Row noGutters={true}>
       <Col>
-        <div className="shimmerBG content-line-common endcommon" />
+        <div className="shimmerBG content-line-common common endcommon" />
       </Col>
       <Col>
-        <div className="shimmerBG content-line-common endcommon" />
+        <div className="shimmerBG content-line-common common endcommon" />
       </Col>
       <Col>
-        <div className="shimmerBG content-line-common endcommon" />
+        <div className="shimmerBG content-line-common common endcommon" />
+      </Col>
+    </Row>
+    <Row noGutters={true}>
+      <Col>
+        <div className="shimmerBG content-line-common common endcommon" />
+      </Col>
+      <Col>
+        <div className="shimmerBG content-line-common common endcommon" />
+      </Col>
+      <Col>
+        <div className="shimmerBG content-line-common common endcommon" />
       </Col>
     </Row>
   </div>
@@ -112,10 +127,10 @@ class MachineComponent extends Component {
       }
       return { ...locker, selected: "0" };
     });
-    const lockerSelected = newLocker.filter(locker => locker._id === id)[0];
+    let lockerSelected = newLocker.filter(locker => locker._id === id)[0];
 
-    this.props.setCost(lockerSelected);
     this.props.setLockers(newLocker);
+    this.props.setCost(lockerSelected);
 
     this.setState({
       lockers: newLocker
@@ -124,23 +139,38 @@ class MachineComponent extends Component {
 
   render() {
     const { lockers, loading } = this.state;
+    const { confirm } = this.props;
+    let isPay;
+    if (Object.keys(confirm).length !== 0) {
+      if (confirm.hasOwnProperty("time")) {
+        if (confirm.time >= 60) {
+          isPay = true;
+        }
+      }
+    } else {
+      isPay = false;
+    }
     return (
       <Card className="pay-machine">
         <Card.Body>
-          <ul className="fa-ul">
-            <li>
-              <span className="fa-li">
-                <i className="far fa-square available" />
-              </span>
-              Green is available
-            </li>
-            <li>
-              <span className="fa-li">
-                <i className="far fa-square unavailable" />
-              </span>
-              Red is unavailable
-            </li>
-          </ul>
+          {loading ? (
+            <LoadingStatus />
+          ) : (
+            <ul className="fa-ul">
+              <li>
+                <span className="fa-li">
+                  <i className="far fa-square available" />
+                </span>
+                Green is available
+              </li>
+              <li>
+                <span className="fa-li">
+                  <i className="far fa-square unavailable" />
+                </span>
+                Red is unavailable
+              </li>
+            </ul>
+          )}
           <div className="tv-touchscreen">
             <Row>
               {loading ? (
@@ -206,7 +236,7 @@ class MachineComponent extends Component {
               )}
             </Row>
           </div>
-          {Object.keys(this.props.confirm).length !== 0 && (
+          {isPay && (
             <Row>
               <Col
                 className="align-center"
@@ -232,6 +262,8 @@ class MachineComponent extends Component {
               <CoinComponent loading={loading} />
             </Col>
           </Row>
+          <SuccessModalComponent />
+          <UnAvailableModalComponent />
         </Card.Body>
       </Card>
     );
@@ -239,35 +271,17 @@ class MachineComponent extends Component {
 }
 
 MachineComponent.propTypes = {
-  lockers: PropTypes.arrayOf(
-    PropTypes.shape({
-      _id: PropTypes.string.isRequired,
-      locker: PropTypes.number.isRequired,
-      size: PropTypes.shape({
-        size: PropTypes.string.isRequired,
-        perhour: PropTypes.number.isRequired,
-        nextminute: PropTypes.number.isRequired
-      }).isRequired,
-      income: PropTypes.number.isRequired,
-      timeout: PropTypes.instanceOf(Date),
-      status: PropTypes.string.isRequired,
-      user: PropTypes.shape({
-        _id: PropTypes.string,
-        telephone: PropTypes.string
-      })
-    })
-  ),
   loading: PropTypes.bool.isRequired
 };
 
 function mapStateToProps(state) {
   return {
     lockers: state.locker,
-    confirm: state.confirm
+    confirm: state.cost.cost
   };
 }
 
 export default connect(
   mapStateToProps,
-  { setLockers: setLockers, setCost: setCost }
+  { setCost: setCost, setLockers: setLockers }
 )(MachineComponent);

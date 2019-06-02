@@ -14,7 +14,7 @@ const HeaderComponent = () => {
           height="30"
           className="d-inline-block align-top"
         />
-        <Link to="/locker" style={{ textDecoration: "none", color: "white" }}>
+        <Link to="/" style={{ textDecoration: "none", color: "white" }}>
           {" I Gear Locker"}
         </Link>
       </Navbar.Brand>

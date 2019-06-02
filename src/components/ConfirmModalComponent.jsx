@@ -1,6 +1,16 @@
 import React, { Component } from "react";
-import { Modal, Button, Form } from "react-bootstrap";
+import { Modal, Button, Form, Col } from "react-bootstrap";
 import { connect } from "react-redux";
+import moment from "moment";
+
+import "./validate.scss";
+import lockerServices from "../services/locker.js";
+import { setCost, deleteMoney } from "../actions/cost.js";
+import {
+  setChangeToSuccessModal,
+  setStatusSuccessModal,
+  setStatusUnAvailableModal
+} from "../actions/modal.js";
 
 class ConfirmModalComponent extends Component {
   constructor(props) {
@@ -8,8 +18,11 @@ class ConfirmModalComponent extends Component {
 
     this.state = {
       loading: false,
-      modalInformation: true,
-      modalSuccess: false
+      modalInformation: false,
+      telephone: "",
+      valid: false,
+      errorNumber: false,
+      errorLength: false
     };
   }
 
@@ -19,25 +32,92 @@ class ConfirmModalComponent extends Component {
     }));
   };
 
-  onClickConfirmButton = () => {
-    this.setState({ isLoading: true }, () => {
-      this.setState({ isLoading: false }, () => {
-        this.setState({ modalInformation: false }, () => {
-          this.setState({ modalSuccess: true });
-        });
-      });
+  onTelephoneNumberChange = e => {
+    const value = e.target.value;
+
+    this.setState({
+      telephone: value
     });
   };
 
-  onClickConfirmHide = () => {
+  handleSubmit = async () => {
+    const { telephone } = this.state;
+
+    let errNumber = true;
+    let errLength = true;
+
+    const regNumber = /^\d+$/;
+    if (!regNumber.test(telephone)) {
+      errNumber = true;
+    } else {
+      errNumber = false;
+    }
+    if (telephone.length !== 10) {
+      errLength = true;
+    } else {
+      errLength = false;
+    }
+
     this.setState({
-      modalSuccess: false
+      errorNumber: errNumber,
+      errorLength: errLength,
+      valid: errNumber || errLength
     });
+
+    if (!errNumber && !errLength) {
+      this.setState({
+        loading: true
+      });
+      const { locker, money } = this.props;
+      const timeout = moment()
+        .add(locker.time, "minutes")
+        .format("YYYY-MM-DD[T]HH:mm:ss.SSS");
+      const rentData = {
+        _id: locker._id,
+        telephone: telephone,
+        income: money - locker.change,
+        timeout: timeout,
+        status: "1"
+      };
+
+      await lockerServices
+        .rentLocker(rentData)
+        .then(() => {
+          this.props.setChangeToSuccessModal(locker.change);
+          this.setState(
+            {
+              loading: false,
+              modalInformation: false
+            },
+            () => {
+              this.props.setCost({});
+              this.props.deleteMoney(0);
+              this.props.setStatusSuccessModal(true);
+            }
+          );
+        })
+        .catch(err => {
+          this.setState(
+            {
+              loading: false
+            },
+            () => {
+              this.props.setStatusUnAvailableModal(true);
+            }
+          );
+        });
+    }
   };
 
   render() {
-    const { modalInformation, loading, modalSuccess } = this.state;
-    const { locker } = this.props;
+    const {
+      modalInformation,
+      loading,
+      telephone,
+      valid,
+      errorNumber,
+      errorLength
+    } = this.state;
     return (
       <div>
         <Button
@@ -52,46 +132,45 @@ class ConfirmModalComponent extends Component {
           aria-labelledby="contained-modal-title-vcenter"
           centered
         >
-          <Modal.Header closeButton>
+          <Modal.Header>
             <Modal.Title id="contained-modal-title-vcenter">
               Please fill your information.
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <h4>Telephone</h4>
-            <Form.Group controlId="formBasicEmail">
-              <Form.Control type="email" placeholder="Enter telephone" />
-              <Form.Text className="text-muted">* Required</Form.Text>
+            <Form.Group as={Col} controlId="validationTelephone">
+              <Form.Label>Telephone</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter telephone"
+                value={telephone}
+                isInvalid={valid}
+                onChange={this.onTelephoneNumberChange}
+                required
+              />
+              <Form.Control.Feedback
+                type="invalid"
+                className={errorNumber ? "validate-failed" : "validate-pass"}
+              >
+                - This field accept only numbers.
+              </Form.Control.Feedback>
+              <Form.Control.Feedback
+                type="invalid"
+                className={errorLength ? "validate-failed" : "validate-pass"}
+              >
+                - Must have 10 characters.
+              </Form.Control.Feedback>
             </Form.Group>
           </Modal.Body>
           <Modal.Footer>
             <Button
               variant="primary"
               disabled={loading}
-              onClick={!loading ? this.onClickConfirmButton : null}
+              onClick={this.handleSubmit}
             >
               {loading ? "Loading…" : "Confirm"}
             </Button>
             <Button onClick={this.onClickInformationModal}>Close</Button>
-          </Modal.Footer>
-        </Modal>
-        <Modal
-          show={modalSuccess}
-          size="lg"
-          aria-labelledby="contained-modal-title-vcenter"
-          centered
-        >
-          <Modal.Header closeButton>
-            <Modal.Title id="contained-modal-title-vcenter">
-              Thank you
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <h4>Success ! Transaction has doned.</h4>
-            {locker.change > 0 ? `Your change is ${locker.change}` : ""}
-          </Modal.Body>
-          <Modal.Footer>
-            <Button onClick={this.onClickConfirmHide}>OK</Button>
           </Modal.Footer>
         </Modal>
       </div>
@@ -101,11 +180,18 @@ class ConfirmModalComponent extends Component {
 
 function mapStateToProps(state) {
   return {
-    locker: state.confirm
+    locker: state.cost.cost,
+    money: state.cost.money
   };
 }
 
 export default connect(
   mapStateToProps,
-  null
+  {
+    setCost: setCost,
+    deleteMoney: deleteMoney,
+    setChangeToSuccessModal: setChangeToSuccessModal,
+    setStatusSuccessModal: setStatusSuccessModal,
+    setStatusUnAvailableModal: setStatusUnAvailableModal
+  }
 )(ConfirmModalComponent);

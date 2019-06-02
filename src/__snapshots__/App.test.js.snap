@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test Case 1 Request Locker 1`] = `ShallowWrapper {}`;
