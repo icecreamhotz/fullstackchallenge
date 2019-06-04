@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import moment from "moment";
 
 class CountTimeRended extends React.Component {
@@ -40,9 +39,5 @@ class CountTimeRended extends React.Component {
     return `Timeout: ${calRendedTime}`;
   }
 }
-
-CountTimeRended.propTypes = {
-  loading: PropTypes.string
-};
 
 export default CountTimeRended;
